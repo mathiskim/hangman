@@ -12,195 +12,149 @@
     <div class="container">
       <div class="row">
         <div class="col-md-6">
-          <div class="jumbotron">
+          <div class="panel">
             <h2>Type a letter to start <span id="user-text"></span>
               </h2>                           
           </div>
         </div>
         <div class="col-md-6">
-          <div class="jumbotron">
+          <div class="panel">
             <h2 id = "display-word"></h2>                           
           </div>
         </div>
        </div>
         <div class="row">
         <div class="col-md-6">
-          <div class="jumbotron">
+          <div class="panel">
             <h2>Letters you have guessed: <br></h2> 
             <h2 id = "lettersGuessed"></h2>                           
           </div>
         </div>
           <div class="col-md-5">
-          <div class="jumbotron">
-            <h2>Guesses remaining: <span id="guesses-Left">12</span></h2>            
+          <div class="panel">
+            <h2>Guesses remaining: <span id="guesses">12</span></h2>           
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="panel">
+            <h2>Games Won: <br></h2> 
+            <h2 id="games-won"></h2>                           
+          </div>
+        </div>
+          <div class="col-md-5">
+          <div class="panel">
+            <h2>Games Lost: <br></h2> 
+            <h2 id="games-lost"></h2>            
           </div>
         </div>
       </div>
     </div>
 
-    <!-- We have to put this at the end of our document to ensure the user-text
-         span exists when we try to access it. -->
-    
     <script type="text/javascript">
-    var wordsToGuess = ['space', 'astronaut', 'rocket', 'nasa', 'moon'];    
-    var lettersGuessed = [];
-    var charsToRepeat = '_ ';
-    var displayWord = '';
-    var gameNumber = 1;
-    var wordsToGuessIndex = (gameNumber - 1);
-    var nbrOfWins = 0;
-    var nbrOfLosses = 0;   
-	var nbrOfCorrectLetters = 0;
-	var nbrOfIncorrectLetters = 0;
-	var nbrGuessesAllowed = 12;
-	var guessesLeft = 12;
-   
+    
+	    var wordsToGuess = ['space', 'astronaut', 'rocket', 'nasa', 'moon']; 
+      var charsToRepeat = '_ ';	    
+      var guessesLeft;
+
       var userText = document.getElementById("user-text");
       var letterGuessed = document.getElementById("letter-guessed");
       var dispWord = document.getElementById("display-word");
-      var dispGuessesLeft = document.getElementById("guesses-left");
-    //  dispGuessesLeft.textContent = guessesLeft;
-	  
-      var wordToDisplay = wordsToGuess[wordsToGuessIndex];
-	  var lenwtd = wordToDisplay.length;
-     // alert(wordToDisplay);
-      displayWord = charsToRepeat.repeat(wordToDisplay.length);
-	  var lendw = displayWord.length;	 
-    
-      dispWord.textContent = displayWord;   
-		console.log("here");  
+      var dispGuesses = document.getElementById("guesses");
+      var dispGamesWon = document.getElementById("games-won");
+      var dispGamesLost = document.getElementById("games-lost");
+	    var gameNumber = 5;
+	    var displayWord;
+	    
+	    var wordsToGuessIndex;
+	    var nbrOfWins = 0;
+	    var nbrOfLosses = 0; 		
+      var lettersGuessed = [];    
+      var wordToDisplay;
+	    var lenwtd;          
+	    var lendw;
 
+   // sets up variables and values on page at the beginning of each game
+    function setUpGame() {
+        //number of guesses per game
+        guessesLeft = 10;
+        //number of games is the number of words in our array
+        gameNumber = gameNumber - 1;        
+        lettersGuessed = [];
+        wordToDisplay = wordsToGuess[gameNumber];
+        lenwtd = wordToDisplay.length;
+        //alternate underscores and spaces
+        displayWord = charsToRepeat.repeat(wordToDisplay.length);
+        lendw = displayWord.length;
+        //display value of variables on the page
+        dispWord.textContent = displayWord; 
+        dispGuesses.textContent = guessesLeft;
+        document.getElementById("lettersGuessed").textContent  = lettersGuessed;
+        userText.textContent = ""; 
+        if (gameNumber < 0) {
+            dispWord.textContent = 'THANK YOU FOR PLAYING!!'
+      }           
+    }  
+
+    //if user input is upper or lower case letters, add to letters-used array
     function checkInput(){
-         if (!letterGuessed.match(/[a-zA-Z]$/) && letterGuessed != "") {
-        letterGuessed.value="";
-        alert("Please Enter only alphabets");
+        if (!letterGuessed.match(/[a-zA-Z]$/) && letterGuessed != "") {
+            letterGuessed.value="";
+            alert("Please Enter only alphabets");
         } else {
             lettersGuessed.push(letterGuessed);
-        //    alert(lettersGuessed);
-        }
-      }
-	function isItAMatch(ltrToMatch) {
-			
-		var correctGuess = false;		
-	//	alert('lenwtd ' + lenwtd);
-			
-		for (var i = 0; i < lendw; i++){				
-          if (ltrToMatch === wordToDisplay[i]) {	
-			 correctGuess = true;             	  
-			 var l = i * 2;
-			 var m = l + 1;			 
-		//	 alert('displayWord before substring' + displayWord);
-             displayWord = displayWord.substring(0, l) + ltrToMatch +  displayWord.substring(m, lendw); 			
-		  //   alert('displayWord ' + displayWord);		
           }
-		   
-		}	
-		if (correctGuess)  {
-				nbrOfCorrectLetters = nbrOfCorrectLetters + 1;	
-                //    alert('nbrOfCorrectLetters ' + nbrOfCorrectLetters);
-		   } else {
-				nbrOfIncorrectLetters = nbrOfIncorrectLetters + 1;	
-				//	alert('nbrOfIncorrectLetters ' + nbrOfIncorrectLetters);                				
-			}	
-	}
-  
+    }
+
+    //if user input matches a letter in the word, replace the place-holding 
+    //underscore with the letter    
+  	function isItAMatch(ltrToMatch) {		
+	    	for (var i = 0; i < lendw; i++){				
+           if (ltrToMatch === wordToDisplay[i]) {	
+        			 var l = i * 2;
+        			 var m = l + 1;	
+  		         displayWord = displayWord.substring(0, l) + ltrToMatch +  displayWord.substring(m, lendw); 	
+           }
+		    }  
+		}
+		
+
+      setUpGame();       //initial game set up 
       
-    document.onkeyup = function(event) {
-// Get the keyboard button that was pressed when a key event occured:
+      document.onkeyup = function(event) {
+      // Get the keyboard button that was pressed when a key event occured:
       userText.textContent = event.key;
-  //    userText.textContent = userText.textContent + event.key;
-      letterGuessed = event.key;      
     
+      letterGuessed = event.key;      
+      
       checkInput(userText.textContent);	 
-	// alert('display word ' + displayWord);
-	  isItAMatch(letterGuessed);
-	//  alert('displayWord after letterGuessed function ' + displayWord);
+	    //does the user input match a letter in the word?
+	    isItAMatch(letterGuessed);
+	    //display the letters that have been guessed
       document.getElementById("lettersGuessed").textContent  = lettersGuessed;
+
+      //display the word after potentially matching a letter
       dispWord.textContent = displayWord;
       
-      guessesLeft = guessesLeft - 1;
-    //  alert('guessesLeft ' + guessesLeft);
-      dispGuessesLeft.textContent = dispGuessesLeft.textContent + guessesLeft;
-    // document.getElementById("guesses-left").innerHTML  = guessesLeft;
+      guessesLeft = guessesLeft - 1;     
+      dispGuesses.textContent = guessesLeft;
 
+      //are there any underscores left? if not, the user wins
+      if (displayWord.indexOf('_') === -1) {
+      		nbrOfWins = nbrOfWins + 1;
+      		dispGamesWon.textContent = nbrOfWins;
+          setUpGame();
+      }
 
-
-     // alert('guessesLeft ' + guessesLeft);
-      dispGuessesLeft.textContent = guessesLeft;
-	  if (guessesLeft === 0) {
-	      if (nbrOfCorrectLetters === lenwtd) {
-			nbrOfWins = nbrOfWins + 1;
-		  } else {
-			nbrOfLosses = nbrOfLosses + 1;  
-          }
-    }  
-  }
-	  
-    /* var updateGuessesLeft = function() {
-      // Here we are grabbing the HTML element and setting it equal to the guessesLeft.
-      // (i.e. guessesLeft will get displayed in HTML)
-      document.querySelector("#guesses-left").innerHTML = guessesLeft;
-    } 
-  //  for (i=1; i < length.) */
-
-    /* Initialize the game when the page loads.
-hangmanGame.setupGame();
-// When a key is pressed..
-document.onkeyup = function(event) {
-  // Capture pressed key and make it lowercase.
-  hangmanGame.letterGuessed = String.fromCharCode(event.keyCode).toLowerCase();
-  // Pass the guessed letter into our updatePage function to run the game logic.
-  hangmanGame.updatePage(hangmanGame.letterGuessed);
- /*<script type="text/javascript">
-    var userText = document.getElementById("user-text");
-    document.onkeyup = function(event) {
-      userText.textContent = event.key;
-      userText.textContent = userText.textContent + event.key;
-    }
-
-   */
-//  //    userText.textContent = alphabet //event.key;
-
-  //    userText.textContent = userText.textContent + event.key;
- //   }
-  /*  driveToWork: function() {
-
-          // When we say "this" (as in this.mileage) we are referring to the object the method is a part of.
-          // In this case, we will alert the mileage of the car object.
-          alert("Old Mileage: " + mileage);
-
-          // Adding 8 to the car's mileage.
-          mileage = mileage + 8;
-
-          // Alerting the car's new mileage.
-          alert("New mileage: " + this.mileage);
+      //if there are no more guesses left, user loses the game
+	    if (guessesLeft === 0) {
+	  	   nbrOfLosses = nbrOfLosses + 1;
+	  	   dispGamesLost.textContent = nbrOfLosses;
+         setUpGame();
         }
-
-        function Allow(){
-    if (!userText.match(/[a-zA-Z]$/) && userText.value !="") {
-        userText.value="";
-        alert("Please Enter only alphabets");
-    }
-} */
-  //         foo(arr) {
- //   var a = [genesis], b = [], prev;
-
- //   arr.sort();
-   // for ( var i = 0; i < arr.length; i++ ) {
-     //   if ( arr[i] !== prev ) {
-  //          a.push(arr[i]);
-   //         b.push(1);
-    //    } else {
-     //       b[b.length-1]++;
-      //  }
-  //      prev = arr[i];
-   // }
-
-  //  return [a, b];
-//}
-     
-
-
+	  }  
+ 
 </script>
 
 </body>
